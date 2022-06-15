@@ -4,7 +4,7 @@ h1, p {
     border: 1px solid black;
 }
 body {
-    background-image: url(https://images4.alphacoders.com/116/116186.jpg);
+    background-image: url("116186.jpg");
 }
 * {
     display: flex;
@@ -13,8 +13,8 @@ body {
 }
 div {
     display: grid;
-    grid-template-rows: 50px 50px 50px 50px;
-    grid-template-columns: 50px 50px 50px;
+    grid-template-rows: 50px 50px 50px 50px 50px;
+    grid-template-columns: 50px 50px 50px 50px;
 
 }
 .red {
