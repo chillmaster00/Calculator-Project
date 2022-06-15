@@ -1,0 +1,22 @@
+h1, p {
+    background-color: black;
+    color: rgb(0, 125, 0);
+    border: 1px solid black;
+}
+body {
+    background-image: url(https://images4.alphacoders.com/116/116186.jpg);
+}
+* {
+    display: flex;
+    flex-flow: column wrap;
+    align-content: center;
+}
+div {
+    display: grid;
+    grid-template-rows: 50px 50px 50px 50px;
+    grid-template-columns: 50px 50px 50px;
+
+}
+.red {
+    color: red;
+}
