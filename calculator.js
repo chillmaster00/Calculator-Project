@@ -211,31 +211,45 @@ function clearInput(){
 
 function performCalc(num1, num2, op){
     //find operator and print to output
-    console.log(num1);
-    console.log(num2);
-    console.log(op);
-
     switch (op) {
         case 'A':
             total = add(parseFloat(num1), parseFloat(num2));
-            console.log(total);
             break;
         case 'S':
             total = subtract(parseFloat(num1), parseFloat(num2));
-            console.log(total);
             break;
         case 'M':
             total = multiply(parseFloat(num1), parseFloat(num2));
-            console.log(total);
             break;
         case 'D':
             total = divide(parseFloat(num1), parseFloat(num2));
-            console.log(total);
             break;
         default:
             console.log('No Operation');
         }
 }
+
+function findNextOp(allOps){
+    var indexM = allOps.indexOf("M");
+    var indexD = allOps.indexOf("D");
+
+    if(indexM === -1 && indexD === -1){
+        return 0;
+    }
+    else if(indexM === -1){
+        return indexD;
+    }
+    else if(indexD === -1){
+        return indexM;
+    }
+    else if(indexM < indexD){
+        return indexM;
+    }
+    else{
+        return indexD;
+    }
+}
+
 //keyboard listener
 document.getElementById("in").addEventListener('keydown', (event) => {
     var name = event.key;
@@ -248,16 +262,22 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         ops.printList();
 
         while(opsCounter !== 0){
-            var number1 = nums.removeFrom(1);
-            var number2 = nums.removeFrom(1);
-            var operation = ops.removeFrom(0);
-            console.log(number1);
-            console.log(number2);
-            console.log(operation);
+            var nextOp = findNextOp(ops);
+            console.log("nextOp " + nextOp);
+
+            var number1 = nums.removeFrom(nextOp + 1);
+            var number2 = nums.removeFrom(nextOp + 1);
+            var operation = ops.removeFrom(nextOp);
+
+            console.log(number1 + " " + operation + " " + number2);
 
             performCalc(number1, number2, operation);
 
-            nums.insertAt(total, 1);
+            nums.insertAt(total, nextOp + 1);
+
+            nums.printList();
+            ops.printList();
+
             opsCounter--;
         }
         document.getElementById("out").textContent = total;
