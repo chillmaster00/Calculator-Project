@@ -233,12 +233,46 @@ function performCalc(num1, num2, op){
 }
 
 function PMDAS(allOps, allNums, allParens){
+    var start = 0;
+    var end = 0;
 
-    while(opsCounter !== 0){
+    if(allParens.size !== 0){
+        var paren = allParens.removeFrom(0);
+
+        if(paren.open){
+            var newOps = new LinkedList();
+            var newNums = new LinkedList();
+            var newParens = new LinkedList();
+
+            start = paren.index;
+            end = PMDAS(allOps, allNums, allParens);
+            console.log("B-E: " + start + "-" + end);
+            newNums.add("");
+            newNums.add(allNums.removeFrom(start + 2));
+            for(i = start; i < end; i++){
+                newOps.add(allOps.removeFrom(start + 1));
+                newNums.add(allNums.removeFrom(start + 2));
+            }
+            newNums.printList();
+            newOps.printList()
+            total = PMDAS(newOps, newNums, newParens);
+            console.log(total);
+            nums.insertAt(total, start + 1);
+        }
+        else{
+            return paren.index;
+        }
+    }
+    if(allParens.size !== 0 ){
+        console.log("found the meta case");
+        return;
+    }
+
+    while(allOps.size !== 0){
         var indexM = allOps.indexOf("M");
         var indexD = allOps.indexOf("D");
         var indexOp = 0;
-    
+
         if(indexM === -1 && indexD === -1){
             indexOp = 0;
         }
@@ -257,21 +291,21 @@ function PMDAS(allOps, allNums, allParens){
 
         console.log("nextOp " + indexOp);
 
-        var number1 = nums.removeFrom(indexOp + 1);
-        var number2 = nums.removeFrom(indexOp + 1);
-        var operation = ops.removeFrom(indexOp);
+        var number1 = allNums.removeFrom(indexOp + 1);
+        var number2 = allNums.removeFrom(indexOp + 1);
+        var operation = allOps.removeFrom(indexOp);
 
         console.log(number1 + " " + operation + " " + number2);
 
         performCalc(number1, number2, operation);
 
-        nums.insertAt(total, indexOp + 1);
+        allNums.insertAt(total, indexOp + 1);
 
-        nums.printList();
-        ops.printList();
+        allNums.printList();
+        allOps.printList();
         opsCounter--;
     }
-
+    return (total);
 }
 
 //keyboard listener
@@ -285,7 +319,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         nums.printList();
         ops.printList();
 
-        PMDAS(ops, nums, parens);
+        PMDAS(ops, nums, parens, 0);
 
         document.getElementById("out").textContent = total.toFixed(5);
         document.getElementById("history").innerHTML += 
@@ -334,13 +368,13 @@ document.getElementById("in").addEventListener('keydown', (event) => {
     else if(name === "("){
         parens.add({
             open: true,
-            index: nums.size-1
+            index: ops.size-1
         });
     }
     else if (name === ")"){
         parens.add({
             open: false,
-            index: nums.size-1
+            index: ops.size-1
         });
     }
     else if(name === "Shift"){
@@ -374,10 +408,14 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     }
     else if(name === "/"){
     }
+    else if(name === "("){
+    }
+    else if(name === ")"){
+    }
     else if(name === "Shift"){
     }
     else{
-        alert(`Invalid Input: Key Pressed ${name}`);
+        alert(`Invalid Input: Key Pressed ${name} ${code}`);
         clearInput();
     }
 }, false);
