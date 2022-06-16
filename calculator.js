@@ -1,8 +1,192 @@
+//node class
+class Node {
+    // constructor
+    constructor(element) {
+        this.element = element;
+        this.next = null
+    }
+}
+// linkedlist class
+class LinkedList {
+    constructor() {
+        this.head = null;
+        this.size = 0;
+    }
+ 
+    // adds an element at the end
+    // of list
+    add(element) {
+        // creates a new node
+        var node = new Node(element);
+ 
+        // to store current node
+        var current;
+ 
+        // if list is Empty add the
+        // element and make it head
+        if (this.head == null)
+            this.head = node;
+        else {
+            current = this.head;
+ 
+            // iterate to the end of the
+            // list
+            while (current.next) {
+                current = current.next;
+            }
+ 
+            // add node
+            current.next = node;
+        }
+        this.size++;
+    }
+ 
+    // insert element at the position index
+    // of the list
+    insertAt(element, index) {
+        if (index < 0 || index > this.size)
+            return console.log("Please enter a valid index.");
+        else {
+            // creates a new node
+            var node = new Node(element);
+            var curr, prev;
+ 
+            curr = this.head;
+ 
+            // add the element to the
+            // first index
+            if (index == 0) {
+                node.next = this.head;
+                this.head = node;
+            } else {
+                curr = this.head;
+                var it = 0;
+ 
+                // iterate over the list to find
+                // the position to insert
+                while (it < index) {
+                    it++;
+                    prev = curr;
+                    curr = curr.next;
+                }
+ 
+                // adding an element
+                node.next = curr;
+                prev.next = node;
+            }
+            this.size++;
+        }
+    }
+ 
+    // removes an element from the
+    // specified location
+    removeFrom(index) {
+        if (index < 0 || index >= this.size)
+            return console.log("Please Enter a valid index");
+        else {
+            var curr, prev, it = 0;
+            curr = this.head;
+            prev = curr;
+ 
+            // deleting first element
+            if (index === 0) {
+                this.head = curr.next;
+            } else {
+                // iterate over the list to the
+                // position to removce an element
+                while (it < index) {
+                    it++;
+                    prev = curr;
+                    curr = curr.next;
+                }
+ 
+                // remove the element
+                prev.next = curr.next;
+            }
+            this.size--;
+ 
+            // return the remove element
+            return curr.element;
+        }
+    }
+ 
+    // removes a given element from the
+    // list
+    removeElement(element) {
+        var current = this.head;
+        var prev = null;
+ 
+        // iterate over the list
+        while (current != null) {
+            // comparing element with current
+            // element if found then remove the
+            // and return true
+            if (current.element === element) {
+                if (prev == null) {
+                    this.head = current.next;
+                } else {
+                    prev.next = current.next;
+                }
+                this.size--;
+                return current.element;
+            }
+            prev = current;
+            current = current.next;
+        }
+        return -1;
+    }
+ 
+ 
+    // finds the index of element
+    indexOf(element) {
+        var count = 0;
+        var current = this.head;
+ 
+        // iterate over the list
+        while (current != null) {
+            // compare each element of the list
+            // with given element
+            if (current.element === element)
+                return count;
+            count++;
+            current = current.next;
+        }
+ 
+        // not found
+        return -1;
+    }
+ 
+    // checks the list for empty
+    isEmpty() {
+        return this.size == 0;
+    }
+ 
+    // gives the size of the list
+    size_of_list() {
+        console.log(this.size);
+    }
+ 
+ 
+    // prints the list items
+    printList() {
+        var curr = this.head;
+        var str = "";
+        while (curr) {
+            str += curr.element + " ";
+            curr = curr.next;
+        }
+        console.log(str);
+    }
+ 
+}
+
 //variables
 var opflag = false;
-var op = '';
-var num1 = "";
-var num2 = "";
+var ops = new LinkedList();
+var nums = new LinkedList();
+var opsCounter = 0;
+var nextNum = "";
+var total = 0;
 
 //basic math functions
 function add(leftVal, rightVal) {
@@ -20,81 +204,115 @@ function multiply(leftVal, rightVal) {
 function divide(leftVal, rightVal) {
     return leftVal / rightVal;
 }
+
 function clearInput(){
     document.getElementById("in").value = "";
 }
 
+function performCalc(num1, num2, op){
+    //find operator and print to output
+    console.log(num1);
+    console.log(num2);
+    console.log(op);
+
+    switch (op) {
+        case 'A':
+            total = add(parseFloat(num1), parseFloat(num2));
+            console.log(total);
+            break;
+        case 'S':
+            total = subtract(parseFloat(num1), parseFloat(num2));
+            console.log(total);
+            break;
+        case 'M':
+            total = multiply(parseFloat(num1), parseFloat(num2));
+            console.log(total);
+            break;
+        case 'D':
+            total = divide(parseFloat(num1), parseFloat(num2));
+            console.log(total);
+            break;
+        default:
+            console.log('No Operation');
+        }
+}
 //keyboard listener
-document.getElementById("in").addEventListener('keydown', (event) => {;
+document.getElementById("in").addEventListener('keydown', (event) => {
     var name = event.key;
     var code = event.code;
 
     if (name === 'Enter') {
-        //find operator and print to output
-        switch (op) {
-            case 'A':
-                document.getElementById("out").textContent = add(parseFloat(num1), parseFloat(num2));
-                break;
-            case 'S':
-                document.getElementById("out").textContent = subtract(parseFloat(num1), parseFloat(num2));
-                break;
-            case 'M':
-                document.getElementById("out").textContent = multiply(parseFloat(num1), parseFloat(num2));
-                break;
-            case 'D':
-                document.getElementById("out").textContent = divide(parseFloat(num1), parseFloat(num2));
-                break;
-            default:
-                console.log('No Operation');
-        }
         //log output
+        nums.add(nextNum);
+        nums.printList();
+        ops.printList();
+
+        while(opsCounter !== 0){
+            var number1 = nums.removeFrom(1);
+            var number2 = nums.removeFrom(1);
+            var operation = ops.removeFrom(0);
+            console.log(number1);
+            console.log(number2);
+            console.log(operation);
+
+            performCalc(number1, number2, operation);
+
+            nums.insertAt(total, 1);
+            opsCounter--;
+        }
+        document.getElementById("out").textContent = total;
         document.getElementById("history").innerHTML += 
             document.getElementById("in").value + ' = ' + document.getElementById("out").textContent + '<br/>';
         clearInput();
-        num1 = "";
-        num2 = "";
         opflag = false;
-        op = '';
+        ops = new LinkedList();
+        nums = new LinkedList();
+        opsCounter = 0;
+        nextNum = "";
+        total = 0;
         return;
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
-        if(opflag){
-            num2 += name;
-            console.log(num2);
+       if (opsCounter === nums.size){
+            nums.add(nextNum);
+            nextNum = "" + name;
         }
+
         else{
-            num1 += name;
-            console.log(num1);
+            nextNum += name;
+            console.log(nextNum);
         }
     }
     else if(name === "+"){
         opflag = true;
-        op = 'A';
-        console.log(opflag);
+        ops.add('A');
+        opsCounter++;
     }
     else if(name === "-"){
         opflag = true;
-        op = 'S';
-        console.log(opflag);
+        ops.add('S');
+        opsCounter++;
     }
     else if(name === "*"){
         opflag = true;
-        op = 'M';
-        console.log(opflag);
+        ops.add('M');
+        opsCounter++;
     }
     else if(name === "/"){
         opflag = true;
-        op = 'D';
-        console.log(opflag);
+        ops.add('D');
+        opsCounter++;
     }
     else if(name === "Shift"){
 
     }
     else {
-        num1 = "";
-        num2 = "";
         opflag = false;
-        op = ''; 
+        ops = new LinkedList();
+        nums = new LinkedList();
+        opsCounter = 0;
+        nextNum = "";
+        total = 0;
         return;
     }
 }, false);
@@ -124,24 +342,6 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
 }, false);
 
 //console tests
-console.log(add("1","1"));
-console.log(add(-1,1));
-console.log(add(1.1,1));
-console.log(add(1.1,1.2));
 
-console.log(subtract(1,1));
-console.log(subtract(-1,1));
-console.log(subtract(1.1,1));
-console.log(subtract(1.1,1.2));
-
-console.log(multiply(1,1));
-console.log(multiply(-1,1));
-console.log(multiply(1.1,1));
-console.log(multiply(1.1,1.2));
-
-console.log(divide(1,1));
-console.log(divide(-1,1));
-console.log(divide(1.1,1));
-console.log(divide(1.1,1.2));
 
 
