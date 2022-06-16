@@ -180,10 +180,13 @@ class LinkedList {
  
 }
 
+
+
 //variables
 var opflag = false;
 var ops = new LinkedList();
 var nums = new LinkedList();
+var parens = new LinkedList();
 var opsCounter = 0;
 var nextNum = "";
 var total = 0;
@@ -229,25 +232,46 @@ function performCalc(num1, num2, op){
         }
 }
 
-function findNextOp(allOps){
-    var indexM = allOps.indexOf("M");
-    var indexD = allOps.indexOf("D");
+function PMDAS(allOps, allNums, allParens){
 
-    if(indexM === -1 && indexD === -1){
-        return 0;
+    while(opsCounter !== 0){
+        var indexM = allOps.indexOf("M");
+        var indexD = allOps.indexOf("D");
+        var indexOp = 0;
+    
+        if(indexM === -1 && indexD === -1){
+            indexOp = 0;
+        }
+        else if(indexM === -1){
+            indexOp = indexD;
+        }
+        else if(indexD === -1){
+            indexOp = indexM;
+        }
+        else if(indexM < indexD){
+            indexOp = indexM;
+        }
+        else{
+            indexOp = indexD;
+        }
+
+        console.log("nextOp " + indexOp);
+
+        var number1 = nums.removeFrom(indexOp + 1);
+        var number2 = nums.removeFrom(indexOp + 1);
+        var operation = ops.removeFrom(indexOp);
+
+        console.log(number1 + " " + operation + " " + number2);
+
+        performCalc(number1, number2, operation);
+
+        nums.insertAt(total, indexOp + 1);
+
+        nums.printList();
+        ops.printList();
+        opsCounter--;
     }
-    else if(indexM === -1){
-        return indexD;
-    }
-    else if(indexD === -1){
-        return indexM;
-    }
-    else if(indexM < indexD){
-        return indexM;
-    }
-    else{
-        return indexD;
-    }
+
 }
 
 //keyboard listener
@@ -261,32 +285,16 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         nums.printList();
         ops.printList();
 
-        while(opsCounter !== 0){
-            var nextOp = findNextOp(ops);
-            console.log("nextOp " + nextOp);
+        PMDAS(ops, nums, parens);
 
-            var number1 = nums.removeFrom(nextOp + 1);
-            var number2 = nums.removeFrom(nextOp + 1);
-            var operation = ops.removeFrom(nextOp);
-
-            console.log(number1 + " " + operation + " " + number2);
-
-            performCalc(number1, number2, operation);
-
-            nums.insertAt(total, nextOp + 1);
-
-            nums.printList();
-            ops.printList();
-
-            opsCounter--;
-        }
-        document.getElementById("out").textContent = total;
+        document.getElementById("out").textContent = total.toFixed(5);
         document.getElementById("history").innerHTML += 
             document.getElementById("in").value + ' = ' + document.getElementById("out").textContent + '<br/>';
         clearInput();
         opflag = false;
         ops = new LinkedList();
         nums = new LinkedList();
+        parens = new LinkedList();
         opsCounter = 0;
         nextNum = "";
         total = 0;
@@ -323,6 +331,18 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         ops.add('D');
         opsCounter++;
     }
+    else if(name === "("){
+        parens.add({
+            open: true,
+            index: nums.size-1
+        });
+    }
+    else if (name === ")"){
+        parens.add({
+            open: false,
+            index: nums.size-1
+        });
+    }
     else if(name === "Shift"){
 
     }
@@ -330,6 +350,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         opflag = false;
         ops = new LinkedList();
         nums = new LinkedList();
+        parens = new LinkedList();
         opsCounter = 0;
         nextNum = "";
         total = 0;
