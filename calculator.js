@@ -240,7 +240,8 @@ function PMDAS(allOps, allNums, allParens){
     //parenthesis case
     if(allParens.size !== 0){
         var paren = allParens.removeFrom(0);
-
+        console.log("open:" + paren.open + " index:" + paren.index);
+        
         if(paren.open){
             //prep for recursion
             var newOps = new LinkedList();
@@ -265,25 +266,26 @@ function PMDAS(allOps, allNums, allParens){
             }
             newNums.printList();
             newOps.printList();
+            
 
+            //pushes the recursive case and insert the total hopefully correctly
             PMDAS(newOps, newNums, newParens);
-            console.log(total + " " + add(start, 1));
-            if(start == -1){
-                allNums.insertAt(total, 1);
-            }
-            else{
-                allNums.insertAt(total, add(start, 1));
-            }
+            console.log("total:" + total + " Loc:" + add(start, 1));
+           
+            allNums.insertAt(total, add(start, 2));
+            
             allNums.printList();
         }
         else{
             console.log(parenOffset);
-            return paren.index - parenOffset;
+            return paren.index;
         }
     }
     if(allParens.size !== 0 ){
-        console.log("found the meta case");
-        return;
+        console.log("found the multiple case");
+        return PMDAS(allOps,allNums, allParens);
+
+
     }
 
     //No More Parenthesis
@@ -348,6 +350,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         nums = new LinkedList();
         parens = new LinkedList();
         opsCounter = 0;
+        parenOffset = 0;
         nextNum = "";
         total = 0;
         return;
@@ -404,6 +407,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         nums = new LinkedList();
         parens = new LinkedList();
         opsCounter = 0;
+        parenOffset = 0;
         nextNum = "";
         total = 0;
         return;
@@ -433,7 +437,6 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     else if(name === "Shift"){
     }
     else{
-        alert(`Invalid Input: Key Pressed ${name} ${code}`);
         clearInput();
     }
 }, false);
