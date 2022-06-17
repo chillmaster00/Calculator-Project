@@ -190,6 +190,7 @@ var parens = new LinkedList();
 var opsCounter = 0;
 var nextNum = "";
 var total = 0;
+var parenOffset = 0;
 
 //basic math functions
 function add(leftVal, rightVal) {
@@ -236,31 +237,48 @@ function PMDAS(allOps, allNums, allParens){
     var start = 0;
     var end = 0;
 
+    //parenthesis case
     if(allParens.size !== 0){
         var paren = allParens.removeFrom(0);
 
         if(paren.open){
+            //prep for recursion
             var newOps = new LinkedList();
             var newNums = new LinkedList();
             var newParens = new LinkedList();
+            console.log(parenOffset);
 
-            start = paren.index;
-            end = PMDAS(allOps, allNums, allParens);
+            //find start and end for parenthesis and offset
+            start = paren.index - parenOffset;
+            end = PMDAS(allOps, allNums, allParens) - parenOffset;
+
             console.log("B-E: " + start + "-" + end);
+
+            //prepare new isolated nums and ops for recursion
             newNums.add("");
             newNums.add(allNums.removeFrom(start + 2));
             for(i = start; i < end; i++){
                 newOps.add(allOps.removeFrom(start + 1));
                 newNums.add(allNums.removeFrom(start + 2));
+                //increment offset for future parenthesis
+                parenOffset++;
             }
             newNums.printList();
-            newOps.printList()
-            total = PMDAS(newOps, newNums, newParens);
-            console.log(total);
-            nums.insertAt(total, start + 1);
+            newOps.printList();
+
+            PMDAS(newOps, newNums, newParens);
+            console.log(total + " " + add(start, 1));
+            if(start == -1){
+                allNums.insertAt(total, 1);
+            }
+            else{
+                allNums.insertAt(total, add(start, 1));
+            }
+            allNums.printList();
         }
         else{
-            return paren.index;
+            console.log(parenOffset);
+            return paren.index - parenOffset;
         }
     }
     if(allParens.size !== 0 ){
@@ -268,6 +286,7 @@ function PMDAS(allOps, allNums, allParens){
         return;
     }
 
+    //No More Parenthesis
     while(allOps.size !== 0){
         var indexM = allOps.indexOf("M");
         var indexD = allOps.indexOf("D");
@@ -305,7 +324,6 @@ function PMDAS(allOps, allNums, allParens){
         allOps.printList();
         opsCounter--;
     }
-    return (total);
 }
 
 //keyboard listener
