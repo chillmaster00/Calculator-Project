@@ -213,7 +213,10 @@ function changeStyle(){
 }
 
 function buttonPress(button){
-
+    console.log("hello")
+    document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
+        'key': button
+      }));
 }
 
 //basic math functions
