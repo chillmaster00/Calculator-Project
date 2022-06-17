@@ -191,6 +191,29 @@ var opsCounter = 0;
 var nextNum = "";
 var total = 0;
 var parenOffset = 0;
+var isFire = true;
+
+//style & button functions
+function changeStyle(){
+    if(isFire){
+        document.getElementById("b").setAttribute("class","ice");
+        document.getElementById("out").setAttribute("class","ice");
+        document.getElementById("history").setAttribute("class","ice");
+
+        isFire = false;
+    }
+    else{
+        document.getElementById("b").removeAttribute("class","ice");
+        document.getElementById("out").removeAttribute("class","ice");
+        document.getElementById("history").removeAttribute("class","ice");
+
+        isFire = true;
+    }
+}
+
+function buttonPress(button){
+    
+}
 
 //basic math functions
 function add(leftVal, rightVal) {

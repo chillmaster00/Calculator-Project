@@ -13,10 +13,20 @@ body {
 }
 div {
     display: grid;
-    grid-template-rows: 50px 50px 50px 50px 50px;
+    grid-template-rows: 50px 50px 50px 50px 50px 50px;
     grid-template-columns: 50px 50px 50px 50px;
 
 }
-.red {
-    color: red;
+.fire {
+    background-color: black;
+    color: rgb(0, 125, 0);
+    border: 1px solid black;
+}
+body.ice {
+    background-image: url("SL1116.jpg");
+}
+h1.ice, p.ice {
+    background-color: rgb(187, 239, 244);
+    color: rgb(203, 77, 253);
+    border: 1px solid rgb(187, 239, 244);
 }
