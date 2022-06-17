@@ -199,20 +199,21 @@ function changeStyle(){
         document.getElementById("b").setAttribute("class","ice");
         document.getElementById("out").setAttribute("class","ice");
         document.getElementById("history").setAttribute("class","ice");
-
+        document.getElementById("fi").innerHTML = "Ice <br> Mode <br> 🥶";
         isFire = false;
     }
     else{
         document.getElementById("b").removeAttribute("class","ice");
         document.getElementById("out").removeAttribute("class","ice");
         document.getElementById("history").removeAttribute("class","ice");
+        document.getElementById("fi").innerHTML = "Fire <br> Mode <br> 🥵";
 
         isFire = true;
     }
 }
 
 function buttonPress(button){
-    
+
 }
 
 //basic math functions
