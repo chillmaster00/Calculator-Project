@@ -212,37 +212,35 @@ function changeStyle(){
     }
 }
 
+//Digital button implementer
 function buttonPress(button){
-    if(button != 'Enter'){
+    if(button === 'Backspace'){
+        document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
+            'key': button
+          }));
+        document.getElementById("in").value = document.getElementById("in").value.slice(0, document.getElementById("in").value.length - 1);
+    }
+    else if(button !== 'Enter' && button !== 'C'){
         document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
             'key': button
         }));
         document.getElementById("in").value += button;
     }
-    else{
+    else {
         document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
             'key': button
           }));
     }
 }
 
-//basic math functions
-function add(leftVal, rightVal) {
-    return leftVal + rightVal;
+//records the history at the bottom
+function history(){
+    document.getElementById("out").textContent = total.toFixed(5);
+    document.getElementById("history").innerHTML += 
+        document.getElementById("in").value + ' = ' + document.getElementById("out").textContent + '<br/>';
 }
 
-function subtract(leftVal, rightVal) {
-    return leftVal - rightVal;
-}
-
-function multiply(leftVal, rightVal) {
-    return leftVal * rightVal;
-}
-
-function divide(leftVal, rightVal) {
-    return leftVal / rightVal;
-}
-
+//Resets everything
 function clearInput(){
     document.getElementById("in").value = '';
     opflag = false;
@@ -255,20 +253,44 @@ function clearInput(){
     total = 0;
 }
 
+function backspace(){
+    var part = document.getElementById("in").value.substr(document.getElementById("in").value.length - 1);
+    console.log(part);
+    if((part >= 0 && part <= 9)|| part === '.'){
+        if(nums.size - opsCounter >= 2){
+            nums.removeFrom(nums.size - 1);
+        }
+        nextNum = nextNum.slice(0, nextNum.length - 1)
+        console.log(nextNum);
+    }
+    else if(part === "+" || part === "-" || part === "*" || part === "/"){
+        ops.removeFrom(ops.size - 1);
+        opsCounter--;
+    }
+    else if(part === "(" || part === ")"){
+        console.log("hello")
+        parens.removeFrom(parens.size - 1);
+    }
+    else {
+        console.log(part + " was not deleted");
+        return;
+    }
+}
+
 function performCalc(num1, num2, op){
     //find operator and print to output
     switch (op) {
         case 'A':
-            total = add(parseFloat(num1), parseFloat(num2));
+            total = parseFloat(num1) + parseFloat(num2);
             break;
         case 'S':
-            total = subtract(parseFloat(num1), parseFloat(num2));
+            total = parseFloat(num1) - parseFloat(num2);
             break;
         case 'M':
-            total = multiply(parseFloat(num1), parseFloat(num2));
+            total = parseFloat(num1) * parseFloat(num2);
             break;
         case 'D':
-            total = divide(parseFloat(num1), parseFloat(num2));
+            total = parseFloat(num1) / parseFloat(num2);
             break;
         default:
             console.log('No Operation');
@@ -312,9 +334,7 @@ function PMDAS(allOps, allNums, allParens){
 
             //pushes the recursive case and insert the total hopefully correctly
             PMDAS(newOps, newNums, newParens);
-            console.log("total:" + total + " Loc:" + add(start, 1));
-           
-            allNums.insertAt(total, add(start, 2));
+            allNums.insertAt(total, (start + 2));
             
             allNums.printList();
         }
@@ -326,8 +346,6 @@ function PMDAS(allOps, allNums, allParens){
     if(allParens.size !== 0 ){
         console.log("found the multiple case");
         return PMDAS(allOps,allNums, allParens);
-
-
     }
 
     //No More Parenthesis
@@ -383,9 +401,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
 
         PMDAS(ops, nums, parens, 0);
 
-        document.getElementById("out").textContent = total.toFixed(5);
-        document.getElementById("history").innerHTML += 
-            document.getElementById("in").value + ' = ' + document.getElementById("out").textContent + '<br/>';
+        history();
         clearInput();
         return;
     }
@@ -432,10 +448,17 @@ document.getElementById("in").addEventListener('keydown', (event) => {
             index: ops.size-1
         });
     }
+    else if (name === "C"){
+        clearInput();
+    }
+    else if (name === "Backspace"){
+        backspace();
+    }
     else if(name === "Shift"){
 
     }
     else {
+        console.log(name + " " + code)
         return;
     }
 }, false);
@@ -461,6 +484,8 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     else if(name === ")"){
     }
     else if(name === "Shift"){
+    }
+    else if (name === "Backspace"){
     }
     else{
         clearInput();
