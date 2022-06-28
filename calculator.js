@@ -183,7 +183,8 @@ class LinkedList {
 
 
 //variables
-var opflag = false;
+var opflag = true;
+var implictFlag = false;
 var ops = new LinkedList();
 var nums = new LinkedList();
 var parens = new LinkedList();
@@ -218,6 +219,7 @@ function buttonPress(button){
         document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
             'key': button
           }));
+        
         document.getElementById("in").value = document.getElementById("in").value.slice(0, document.getElementById("in").value.length - 1);
     }
     else if(button !== 'Enter' && button !== 'C'){
@@ -225,11 +227,14 @@ function buttonPress(button){
             'key': button
         }));
         document.getElementById("in").value += button;
+        document.getElementById("in").dispatchEvent(new KeyboardEvent('keyup', {
+            'key': button
+        }));
     }
     else {
         document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
             'key': button
-          }));
+        }));
     }
 }
 
@@ -243,7 +248,8 @@ function history(){
 //Resets everything
 function clearInput(){
     document.getElementById("in").value = '';
-    opflag = false;
+    opflag = true;
+    implictFlag = false;
     ops = new LinkedList();
     nums = new LinkedList();
     parens = new LinkedList();
@@ -268,12 +274,18 @@ function backspace(){
         opsCounter--;
     }
     else if(part === "(" || part === ")"){
-        console.log("hello")
         parens.removeFrom(parens.size - 1);
     }
     else {
         console.log(part + " was not deleted");
         return;
+    }
+}
+
+function opsCheck(){
+    if(opflag === true){
+        alert("Illegal operation placement");
+        buttonPress('Backspace');
     }
 }
 
@@ -406,7 +418,13 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         return;
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
-       if (opsCounter === nums.size){
+        if(implictFlag){
+            ops.add('M');
+            opsCounter++;
+        }
+        implictFlag = true;
+        opflag = false;
+        if (opsCounter === nums.size){
             nums.add(nextNum);
             nextNum = "" + name;
         }
@@ -417,32 +435,40 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         }
     }
     else if(name === "+"){
-        opflag = true;
+        implictFlag = false;
         ops.add('A');
         opsCounter++;
     }
     else if(name === "-"){
-        opflag = true;
+        implictFlag = false;
         ops.add('S');
         opsCounter++;
     }
     else if(name === "*"){
-        opflag = true;
+        implictFlag = false;
         ops.add('M');
         opsCounter++;
     }
     else if(name === "/"){
-        opflag = true;
+        implictFlag = false;
         ops.add('D');
         opsCounter++;
     }
     else if(name === "("){
+        if(implictFlag){
+            ops.add('M');
+            opsCounter++;
+        }
+        implictFlag = false;
+        opflag = false;
         parens.add({
             open: true,
             index: ops.size-1
         });
     }
     else if (name === ")"){
+        implictFlag = true;
+        opflag = false;
         parens.add({
             open: false,
             index: ops.size-1
@@ -472,12 +498,20 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     else if((name >= 0 && name <= 9)|| name === '.'){
     }
     else if(name === "+"){
+        opsCheck();
+        opflag = true;
     }
     else if(name === "-"){
+        opsCheck();
+        opflag = true;
     }
     else if(name === "*"){
+        opsCheck();
+        opflag = true;
     }
     else if(name === "/"){
+        opsCheck();
+        opflag = true;
     }
     else if(name === "("){
     }
@@ -488,7 +522,8 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     else if (name === "Backspace"){
     }
     else{
-        clearInput();
+        alert(name + " is an invalid input");
+        buttonPress('Backspace');
     }
 }, false);
 
