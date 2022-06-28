@@ -213,10 +213,17 @@ function changeStyle(){
 }
 
 function buttonPress(button){
-    console.log("hello")
-    document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
-        'key': button
-      }));
+    if(button != 'Enter'){
+        document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
+            'key': button
+        }));
+        document.getElementById("in").value += button;
+    }
+    else{
+        document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
+            'key': button
+          }));
+    }
 }
 
 //basic math functions
@@ -237,7 +244,15 @@ function divide(leftVal, rightVal) {
 }
 
 function clearInput(){
-    document.getElementById("in").value = "";
+    document.getElementById("in").value = '';
+    opflag = false;
+    ops = new LinkedList();
+    nums = new LinkedList();
+    parens = new LinkedList();
+    opsCounter = 0;
+    parenOffset = 0;
+    nextNum = "";
+    total = 0;
 }
 
 function performCalc(num1, num2, op){
@@ -372,14 +387,6 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         document.getElementById("history").innerHTML += 
             document.getElementById("in").value + ' = ' + document.getElementById("out").textContent + '<br/>';
         clearInput();
-        opflag = false;
-        ops = new LinkedList();
-        nums = new LinkedList();
-        parens = new LinkedList();
-        opsCounter = 0;
-        parenOffset = 0;
-        nextNum = "";
-        total = 0;
         return;
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
@@ -429,14 +436,6 @@ document.getElementById("in").addEventListener('keydown', (event) => {
 
     }
     else {
-        opflag = false;
-        ops = new LinkedList();
-        nums = new LinkedList();
-        parens = new LinkedList();
-        opsCounter = 0;
-        parenOffset = 0;
-        nextNum = "";
-        total = 0;
         return;
     }
 }, false);
