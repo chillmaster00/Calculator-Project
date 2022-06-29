@@ -184,7 +184,8 @@ class LinkedList {
 
 //variables
 var opflag = true;
-var implictFlag = false;
+var numflag = false;
+var parenflag = false;
 var ops = new LinkedList();
 var nums = new LinkedList();
 var parens = new LinkedList();
@@ -249,7 +250,8 @@ function history(){
 function clearInput(){
     document.getElementById("in").value = '';
     opflag = true;
-    implictFlag = false;
+    numflag = false;
+    parenflag = false;
     ops = new LinkedList();
     nums = new LinkedList();
     parens = new LinkedList();
@@ -418,12 +420,12 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         return;
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
-        if(implictFlag){
-            ops.add('M');
-            opsCounter++;
+        if(parenflag){
+            buttonPress('*');
         }
-        implictFlag = true;
+        numflag = true;
         opflag = false;
+        parenflag = false;
         if (opsCounter === nums.size){
             nums.add(nextNum);
             nextNum = "" + name;
@@ -435,31 +437,35 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         }
     }
     else if(name === "+"){
-        implictFlag = false;
+        numflag = false;
+        parenflag = false;
         ops.add('A');
         opsCounter++;
     }
     else if(name === "-"){
-        implictFlag = false;
+        numflag = false;
+        parenflag = false;
         ops.add('S');
         opsCounter++;
     }
     else if(name === "*"){
-        implictFlag = false;
+        numflag = false;
+        parenflag = false;
         ops.add('M');
         opsCounter++;
     }
     else if(name === "/"){
-        implictFlag = false;
+        numflag = false;
+        parenflag = false;
         ops.add('D');
         opsCounter++;
     }
     else if(name === "("){
-        if(implictFlag){
-            ops.add('M');
-            opsCounter++;
+        if(parenflag || numflag){
+            buttonPress('*');
         }
-        implictFlag = false;
+        numflag = false;
+        parenflag = false;
         opflag = false;
         parens.add({
             open: true,
@@ -467,7 +473,8 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         });
     }
     else if (name === ")"){
-        implictFlag = true;
+        numflag = false;
+        parenflag = true;
         opflag = false;
         parens.add({
             open: false,
