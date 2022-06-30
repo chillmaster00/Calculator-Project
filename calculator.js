@@ -188,6 +188,7 @@ var numflag = false;
 var parenflag = false;
 var paren2flag = false;
 var decimalQuota = false;
+var ans = 0;
 var openP = 0;
 var closeP = 0;
 var ops = new LinkedList();
@@ -226,6 +227,27 @@ function buttonPress(button){
           }));
         
         document.getElementById("in").value = document.getElementById("in").value.slice(0, document.getElementById("in").value.length - 1);
+    }
+    else if(button === 'p'){
+        buttonPress('3');
+        buttonPress('.');
+        buttonPress('1');
+        buttonPress('4');
+        buttonPress('1');
+        buttonPress('5');
+        buttonPress('9');
+    }
+    else if(button === 'c'){
+        buttonPress('2');
+        buttonPress('9');
+        buttonPress('9');
+        buttonPress('7');
+        buttonPress('9');
+        buttonPress('2');
+        buttonPress('4');
+        buttonPress('5');
+        buttonPress('8');
+
     }
     else if(button !== 'Enter' && button !== 'C'){
         document.getElementById("in").dispatchEvent(new KeyboardEvent('keydown', {
