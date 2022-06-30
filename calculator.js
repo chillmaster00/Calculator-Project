@@ -186,6 +186,9 @@ class LinkedList {
 var opflag = true;
 var numflag = false;
 var parenflag = false;
+var paren2flag = false;
+var openP = 0;
+var closeP = 0;
 var ops = new LinkedList();
 var nums = new LinkedList();
 var parens = new LinkedList();
@@ -252,6 +255,9 @@ function clearInput(){
     opflag = true;
     numflag = false;
     parenflag = false;
+    paren2flag = false;
+    openP = 0;
+    closeP = 0;
     ops = new LinkedList();
     nums = new LinkedList();
     parens = new LinkedList();
@@ -263,7 +269,10 @@ function clearInput(){
 
 function backspace(){
     var part = document.getElementById("in").value.substr(document.getElementById("in").value.length - 1);
-    console.log(part);
+    var newEnd = document.getElementById("in").value.substr(document.getElementById("in").value.length - 2, 1)
+    console.log("newEnd:" + newEnd);
+    console.log("part:" + part);
+
     if((part >= 0 && part <= 9)|| part === '.'){
         if(nums.size - opsCounter >= 2){
             nums.removeFrom(nums.size - 1);
@@ -275,17 +284,62 @@ function backspace(){
         ops.removeFrom(ops.size - 1);
         opsCounter--;
     }
-    else if(part === "(" || part === ")"){
+    else if(part === "("){
         parens.removeFrom(parens.size - 1);
+        openP--;
+    }
+    else if(part === ")"){
+        parens.removeFrom(parens.size - 1);
+        closeP--;
     }
     else {
         console.log(part + " was not deleted");
         return;
     }
+
+    //resets previous value
+    if((newEnd >= 0 && newEnd <= 9)|| newEnd === '.'){
+
+        numflag = true;
+        opflag = false;
+        parenflag = false;
+        paren2flag = false;
+
+    }
+    else if(newEnd === "+" || newEnd === "-" || newEnd === "*" || newEnd === "/"){
+
+        numflag = false;
+        parenflag = false;
+        opflag = true;
+        paren2flag = false;
+
+    }
+    else if(newEnd === "("){
+
+        numflag = false;
+        parenflag = false;
+        opflag = false;
+        paren2flag = true;
+
+    }
+    else if(newEnd === ")"){
+
+        numflag = false;
+        parenflag = true;
+        opflag = false;
+        paren2flag = false;
+
+    } else{
+        console.log("i shouldn't be here");
+    }
+
+    if(document.getElementById("in").value.length === 1){
+        clearInput();
+    }
 }
 
 function opsCheck(){
-    if(opflag === true){
+    if(opflag || paren2flag){
         alert("Illegal operation placement");
         buttonPress('Backspace');
     }
@@ -332,25 +386,29 @@ function PMDAS(allOps, allNums, allParens){
             end = PMDAS(allOps, allNums, allParens) - parenOffset;
 
             console.log("B-E: " + start + "-" + end);
+            if(start === end){
 
-            //prepare new isolated nums and ops for recursion
-            newNums.add("");
-            newNums.add(allNums.removeFrom(start + 2));
-            for(i = start; i < end; i++){
-                newOps.add(allOps.removeFrom(start + 1));
+            } else{
+                //prepare new isolated nums and ops for recursion
+                newNums.add("");
                 newNums.add(allNums.removeFrom(start + 2));
-                //increment offset for future parenthesis
-                parenOffset++;
-            }
-            newNums.printList();
-            newOps.printList();
-            
+                for(i = start; i < end; i++){
+                    newOps.add(allOps.removeFrom(start + 1));
+                    newNums.add(allNums.removeFrom(start + 2));
+                    //increment offset for future parenthesis
+                    parenOffset++;
+                }
+                newNums.printList();
+                newOps.printList();
+                
 
-            //pushes the recursive case and insert the total hopefully correctly
-            PMDAS(newOps, newNums, newParens);
-            allNums.insertAt(total, (start + 2));
-            
-            allNums.printList();
+                //pushes the recursive case and insert the total hopefully correctly
+                PMDAS(newOps, newNums, newParens);
+                allNums.insertAt(total, (start + 2));
+                
+                allNums.printList();
+            }
+
         }
         else{
             console.log(parenOffset);
@@ -408,6 +466,13 @@ document.getElementById("in").addEventListener('keydown', (event) => {
     var code = event.code;
 
     if (name === 'Enter') {
+        if(openP !== closeP){
+            alert("Unclosed Parenthesis!");
+        } 
+        else if(opsCounter === 0 || nums.size !== opsCounter + 1){
+            alert("Not enough info!");
+        }
+        else {
         //log output
         nums.add(nextNum);
         nums.printList();
@@ -418,14 +483,20 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         history();
         clearInput();
         return;
+        }
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
+        //implicit multiply check
         if(parenflag){
             buttonPress('*');
         }
+
         numflag = true;
         opflag = false;
         parenflag = false;
+        paren2flag = false;
+
+
         if (opsCounter === nums.size){
             nums.add(nextNum);
             nextNum = "" + name;
@@ -439,47 +510,59 @@ document.getElementById("in").addEventListener('keydown', (event) => {
     else if(name === "+"){
         numflag = false;
         parenflag = false;
+
         ops.add('A');
         opsCounter++;
     }
     else if(name === "-"){
         numflag = false;
         parenflag = false;
+
         ops.add('S');
         opsCounter++;
     }
     else if(name === "*"){
         numflag = false;
         parenflag = false;
+
         ops.add('M');
         opsCounter++;
     }
     else if(name === "/"){
         numflag = false;
         parenflag = false;
+
         ops.add('D');
         opsCounter++;
     }
     else if(name === "("){
+        //implicit multiply check
         if(parenflag || numflag){
             buttonPress('*');
         }
+
+        openP++;
         numflag = false;
         parenflag = false;
         opflag = false;
+        paren2flag = true;
+
         parens.add({
             open: true,
             index: ops.size-1
         });
     }
     else if (name === ")"){
+        closeP++;
         numflag = false;
         parenflag = true;
         opflag = false;
+
         parens.add({
             open: false,
             index: ops.size-1
         });
+        
     }
     else if (name === "C"){
         clearInput();
@@ -507,22 +590,35 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     else if(name === "+"){
         opsCheck();
         opflag = true;
+        paren2flag = false;
     }
     else if(name === "-"){
         opsCheck();
         opflag = true;
+        paren2flag = false;
     }
     else if(name === "*"){
         opsCheck();
         opflag = true;
+        paren2flag = false;
     }
     else if(name === "/"){
         opsCheck();
         opflag = true;
+        paren2flag = false;
     }
     else if(name === "("){
     }
     else if(name === ")"){
+        if(openP < closeP){
+            alert("Too many close parenthesis!");
+            buttonPress('Backspace');
+        }
+        if(paren2flag){
+            alert("Empty Parenthesis");
+            buttonPress('Backspace');
+        }
+        paren2flag = false;
     }
     else if(name === "Shift"){
     }
