@@ -187,6 +187,7 @@ var opflag = true;
 var numflag = false;
 var parenflag = false;
 var paren2flag = false;
+var decimalQuota = false;
 var openP = 0;
 var closeP = 0;
 var ops = new LinkedList();
@@ -274,6 +275,10 @@ function backspace(){
     console.log("part:" + part);
 
     if((part >= 0 && part <= 9)|| part === '.'){
+        if(part === '.'){
+            decimalQuota = false;
+        }
+
         if(nums.size - opsCounter >= 2){
             nums.removeFrom(nums.size - 1);
         }
@@ -486,6 +491,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         }
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
+
         //implicit multiply check
         if(parenflag){
             buttonPress('*');
@@ -500,6 +506,7 @@ document.getElementById("in").addEventListener('keydown', (event) => {
         if (opsCounter === nums.size){
             nums.add(nextNum);
             nextNum = "" + name;
+            decimalQuota = false;
         }
 
         else{
@@ -586,6 +593,14 @@ document.getElementById("in").addEventListener('keyup', (event) => {;
     if (name === 'Enter') {
     }
     else if((name >= 0 && name <= 9)|| name === '.'){
+        //Check decimal
+        if(decimalQuota && name === '.'){
+            alert("Too many decimals!");
+            buttonPress('Backspace');
+        }
+        if(name === '.'){
+            decimalQuota = true;
+        }
     }
     else if(name === "+"){
         opsCheck();
